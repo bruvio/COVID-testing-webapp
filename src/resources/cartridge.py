@@ -9,17 +9,25 @@ class Cartridge(Resource):
     parser.add_argument(
         "cartridgeId", type=str, required=True, help="This field cannot be left blank!"
     )
-    parser.add_argument("testStatus", type=int, required=True)
-    parser.add_argument("departmentName", type=int, required=True)
-    parser.add_argument("pattern", type=int, required=True)
-    parser.add_argument("hospitalName", type=int, required=True)
-    parser.add_argument("operatorName", type=int, required=True)
-    parser.add_argument("participantId", type=int, required=True)
-    parser.add_argument("trustName", type=int, required=True)
+    parser.add_argument("testStatus", type=str, required=True)
+    parser.add_argument("departmentName", type=str, required=True)
+    parser.add_argument("boxName", type=str, required=True)
+    parser.add_argument("pattern", type=str, required=True)
+    parser.add_argument("hospitalName", type=str, required=True)
+    parser.add_argument("operatorName", type=str, required=True)
+    parser.add_argument("organisationId", type=str, required=True)
+    parser.add_argument("participantId", type=str, required=True)
+    parser.add_argument("trustName", type=str, required=True)
 
-    parser.add_argument("submissionDateTime", type=inputs.datetime_from_iso8601)
-    parser.add_argument("testStartDateTime", type=inputs.datetime_from_iso8601)
-    parser.add_argument("lastUpdatedDateTime", type=inputs.datetime_from_iso8601)
+    parser.add_argument(
+        "submissionDateTime", type=str, help="ISO8601 UTC Timestamp (ms precision)"
+    )
+    parser.add_argument(
+        "testStartDateTime", type=str, help="ISO8601 UTC Timestamp (ms precision)"
+    )
+    parser.add_argument(
+        "lastUpdatedDateTime", type=str, help="ISO8601 UTC Timestamp (ms precision)"
+    )
 
     @jwt_required()
     def get(self, cartridgeId):
@@ -39,7 +47,7 @@ class Cartridge(Resource):
 
         data = Cartridge.parser.parse_args()
 
-        cartridge = CartridgeModel(cartridgeId, **data)
+        cartridge = CartridgeModel(**data)
 
         try:
             cartridge.save_to_db()
@@ -65,7 +73,7 @@ class Cartridge(Resource):
         if cartridge:
             cartridge.testStatus = data["testStatus"]
         else:
-            cartridge = CartridgeModel(cartridgeId, **data)
+            cartridge = CartridgeModel(**data)
 
         cartridge.save_to_db()
 

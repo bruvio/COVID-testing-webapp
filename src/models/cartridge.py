@@ -15,10 +15,9 @@ class CartridgeModel(db.Model):
     organisationId = db.Column(db.String(80))
     participantId = db.Column(db.String(80))
     trustName = db.Column(db.String(80))
-
-    submissionDateTime = db.Column(db.DateTime)
-    testStartDateTime = db.Column(db.DateTime)
-    lastUpdatedDateTime = db.Column(db.DateTime)
+    submissionDateTime = db.Column(db.String(80))
+    testStartDateTime = db.Column(db.String(80))
+    lastUpdatedDateTime = db.Column(db.String(80))
 
     def __init__(
         self,
