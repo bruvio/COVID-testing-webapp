@@ -50,9 +50,6 @@ class Cartridge(Resource):
 
     @jwt_required()
     def delete(self, cartridgeId):
-        import pdb
-
-        pdb.set_trace()
         cartridge = CartridgeModel.find_by_id(cartridgeId)
         if cartridge:
             cartridge.delete_from_db()

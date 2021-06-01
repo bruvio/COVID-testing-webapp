@@ -55,7 +55,7 @@ class CartridgeModel(db.Model):
 
     @classmethod
     def find_by_id(cls, cartridgeId):
-        return cls.query.filter_by(name=cartridgeId).first()
+        return cls.query.filter_by(cartridgeId=cartridgeId).first()
 
     def save_to_db(self):
         db.session.add(self)

@@ -33,7 +33,7 @@ def create_tables():
 
 jwt = JWT(app, authenticate, identity)  # allows authentication of users /auth
 
-api.add_resource(Cartridge, "/cartridge/<string:name>")
+api.add_resource(Cartridge, "/cartridge/<string:cartridgeId>")
 
 api.add_resource(CartridgeList, "/cartridges")
 api.add_resource(UserRegister, "/register")
