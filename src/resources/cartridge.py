@@ -23,20 +23,21 @@ class Cartridge(Resource):
 
     @jwt_required()
     def get(self, cartridgeId):
-        cartridge = CartridgeModel.find_by_name(cartridgeId)
+        cartridge = CartridgeModel.find_by_id(cartridgeId)
         if cartridge:
             return cartridge.json()
         return {"message": "cartridge not found"}, 404
 
+    @jwt_required()
     def post(self, cartridgeId):
-        if CartridgeModel.find_by_name(cartridgeId):
+        if CartridgeModel.find_by_id(cartridgeId):
             return {
-                "message": "An cartridge with name '{}' already exists.".format(
+                "message": "An cartridge with id '{}' already exists.".format(
                     cartridgeId
                 )
             }, 400
 
-        data = Item.parser.parse_args()
+        data = Cartridge.parser.parse_args()
 
         cartridge = CartridgeModel(cartridgeId, **data)
 
@@ -47,17 +48,22 @@ class Cartridge(Resource):
 
         return cartridge.json(), 201
 
+    @jwt_required()
     def delete(self, cartridgeId):
-        cartridge = CartridgeModel.find_by_name(cartridgeId)
+        import pdb
+
+        pdb.set_trace()
+        cartridge = CartridgeModel.find_by_id(cartridgeId)
         if cartridge:
             cartridge.delete_from_db()
             return {"message": "cartridge deleted."}
         return {"message": "cartridge not found."}, 404
 
+    @jwt_required()
     def put(self, cartridgeId):
         data = Cartridge.parser.parse_args()
 
-        cartridge = CartridgeModel.find_by_name(cartridgeId)
+        cartridge = CartridgeModel.find_by_id(cartridgeId)
 
         if cartridge:
             cartridge.testStatus = data["testStatus"]
@@ -70,5 +76,6 @@ class Cartridge(Resource):
 
 
 class CartridgeList(Resource):
+    @jwt_required()
     def get(self):
         return {"cartridges": list(map(lambda x: x.json(), CartridgeModel.query.all()))}

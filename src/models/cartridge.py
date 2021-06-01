@@ -4,8 +4,8 @@ from db import db
 class CartridgeModel(db.Model):
     __tablename__ = "cartridges"
 
-    id = db.Column(db.Integer, primary_key=True)
-    cartridgeId = db.Column(db.String(80))
+    # id = db.Column(db.Integer)
+    cartridgeId = db.Column(db.String(80), primary_key=True)
     testStatus = db.Column(db.String(80))
     departmentName = db.Column(db.String(80))
     boxName = db.Column(db.String(80))
@@ -54,8 +54,8 @@ class CartridgeModel(db.Model):
         return {"cartridgeId": self.cartridgeId, "testStatus": self.testStatus}
 
     @classmethod
-    def find_by_name(cls, name):
-        return cls.query.filter_by(name=name).first()
+    def find_by_id(cls, cartridgeId):
+        return cls.query.filter_by(name=cartridgeId).first()
 
     def save_to_db(self):
         db.session.add(self)
