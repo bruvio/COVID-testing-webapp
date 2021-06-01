@@ -4,3 +4,7 @@ Flask-JWT
 Flask-SQLAlchemy
 uwsgi
 # psycopg2
+pre-commit
+flake8
+black
+pylint

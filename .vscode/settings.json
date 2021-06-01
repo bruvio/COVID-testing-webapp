@@ -1,10 +1,10 @@
 
 
-{   
-    "python.pythonPath": "$ENVIRONMENT_IF_NOT_SET/bin/python",
+{
+    "python.pythonPath": ".env3.8/bin/python",
     "terminal.integrated.shell.osx": "/bin/zsh",
-    "python.formatting.blackPath": "$ENVIRONMENT_IF_NOT_SET/bin//black",
-    "python.defaultInterpreterPath": "$ENVIRONMENT_IF_NOT_SET/bin/python",
+    "python.formatting.blackPath": ".env3.8/bin//black",
+    "python.defaultInterpreterPath": ".env3.8/bin/python",
     "python.terminal.activateEnvironment": true,
     "terminal.external.osxExec": "iTerm.app",
     "terminal.integrated.fontFamily": "Meslo LG M for Powerline",
@@ -90,7 +90,7 @@
     "workbench.sideBar.location": "right",
     "editor.autoIndent": "advanced",
     "[yaml]": {
-    
+
       "editor.insertSpaces": true,
       "editor.tabSize": 2,
       "editor.autoIndent": "keep",
@@ -108,7 +108,7 @@
         "name": "Python: Current File",
         "type": "python",
         "request": "launch",
-        "program": "${file}",
+        "program": "",
         "console": "integratedTerminal"
       }
     ]

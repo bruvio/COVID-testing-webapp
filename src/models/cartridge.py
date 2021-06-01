@@ -2,7 +2,7 @@ from db import db
 
 
 class CartridgeModel(db.Model):
-    __tablename__ = 'cartridges'
+    __tablename__ = "cartridges"
 
     id = db.Column(db.Integer, primary_key=True)
     cartridgeId = db.Column(db.String(80))
@@ -20,9 +20,22 @@ class CartridgeModel(db.Model):
     testStartDateTime = db.Column(db.DateTime)
     lastUpdatedDateTime = db.Column(db.DateTime)
 
-
-
-    def __init__(self, cartridgeId, departmentName, boxName,pattern,hospitalName,operatorName,organisationId,participantId,trustName,submissionDateTime,testStatus="Incomplete",testStartDateTime=None,lastUpdatedDateTime=None):
+    def __init__(
+        self,
+        cartridgeId,
+        departmentName,
+        boxName,
+        pattern,
+        hospitalName,
+        operatorName,
+        organisationId,
+        participantId,
+        trustName,
+        submissionDateTime,
+        testStatus="Incomplete",
+        testStartDateTime=None,
+        lastUpdatedDateTime=None,
+    ):
         self.cartridgeId = cartridgeId
         self.departmentName = departmentName
         self.boxName = boxName
@@ -37,9 +50,8 @@ class CartridgeModel(db.Model):
         self.testStartDateTime = testStartDateTime
         self.lastUpdatedDateTime = lastUpdatedDateTime
 
-
     def json(self):
-        return {'cartridgeId': self.cartridgeId, 'testStatus': self.testStatus}
+        return {"cartridgeId": self.cartridgeId, "testStatus": self.testStatus}
 
     @classmethod
     def find_by_name(cls, name):

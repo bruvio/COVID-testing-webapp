@@ -6,3 +6,8 @@ pytest
 precommit
 flake8
 ipykernel
+Flask
+Flask-RESTful
+Flask-JWT
+Flask-SQLAlchemy
+uwsgi
