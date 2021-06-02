@@ -5,11 +5,9 @@ import dash_table
 from dash import Dash
 import dash_core_components as dcc
 import plotly.graph_objs as go
-import pandas as pd
-import sqlite3
-import numpy as np
-from src.server import server
 
+from src.server import server
+from src.utils.data import get_data
 
 # @server.route("/tableReport/")
 # def MyDashApp():
@@ -22,15 +20,10 @@ app = Dash(
     external_stylesheets=[dbc.themes.SLATE],
     url_base_pathname="/tableReport/",
 )
-# auth = dash_auth.BasicAuth(
-#     app,
-#     VALID_USERNAME_PASSWORD_PAIRS
-# )
+
 app.scripts.config.serve_locally = True
 app.css.config.serve_locally = True
-# auth = dash_auth.BasicAuth(app, USERNAME_PASSWORD_PAIRS)
 
-# app = dash.Dash()
 
 colors = {
     "background": "#111111",
@@ -39,63 +32,7 @@ colors = {
     "plots": "rgb(255,128,0)",
 }
 
-name = "workouts_bruvio_2020.csv"
-
-# df = read_df_from_s3(name, bucket)
-# df = pd.read_csv("workouts_bruvio_2020.csv")
-
-cnx = sqlite3.connect("./src/data.db")
-
-df = pd.read_sql_query("SELECT * FROM cartridges", cnx)
-
-
-is_complete = df["testStatus"] == "Complete"
-df_try = df[is_complete]
-df_fake = df.append([df_try] * 5, ignore_index=True)
-
-
-df_fake["submitedOn"] = pd.to_datetime(
-    df_fake["submissionDateTime"], infer_datetime_format=True
-)
-df_fake["testStartedOn"] = pd.to_datetime(
-    df_fake["testStartDateTime"], infer_datetime_format=True
-)
-df_fake["lastUpdatedon"] = pd.to_datetime(
-    df_fake["lastUpdatedDateTime"], infer_datetime_format=True
-)
-
-df_fake.drop(
-    ["submissionDateTime", "testStartDateTime", "lastUpdatedDateTime"],
-    axis=1,
-    inplace=True,
-)
-
-df_fake["testTime"] = (df_fake["lastUpdatedon"] - df_fake["submitedOn"]) / pd.Timedelta(
-    minutes=1
-)
-
-
-df_testStatus = pd.pivot_table(
-    df_fake, index="testStatus", values="cartridgeId", aggfunc=[len]
-)
-
-df_testStatus.reset_index(inplace=True)
-df_testStatus.columns = ["testStatus", "count"]
-
-
-p_table = pd.pivot_table(
-    df_fake,
-    index=["hospitalName", "pattern"],
-    values=["testTime"],
-    aggfunc={"testTime": [np.sum, np.mean]},
-)
-
-p_table.reset_index(inplace=True)
-
-p_table.columns = ["hospitalName", "pattern", "testTime_mean", "testTime_sum"]
-
-
-# Create your connection.
+df_fake, df_testStatus, p_table = get_data()
 
 
 dataframes = {
