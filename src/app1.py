@@ -5,10 +5,12 @@ import dash_table
 from dash import Dash
 import dash_core_components as dcc
 import plotly.graph_objs as go
-
+import logging
 from src.server import server
 from src.utils.data import get_data
 
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
 
 app = Dash(
     __name__,
@@ -25,14 +27,16 @@ global df_fake
 global df_testStatus
 global p_table
 
+try:
+    df_fake, df_testStatus, p_table = get_data()
 
-df_fake, df_testStatus, p_table = get_data()
-
-dataframes = {
-    "allData": df_fake,
-    "df_testStatus": df_testStatus,
-    "df_testingTime": p_table,
-}
+    dataframes = {
+        "allData": df_fake,
+        "df_testStatus": df_testStatus,
+        "df_testingTime": p_table,
+    }
+except:
+    logger.warning("\n error reading database or empty database")
 
 
 def get_data_object(user_selection):
@@ -43,26 +47,30 @@ def get_data_object(user_selection):
 
 
 def change_layout():
-    df_fake, df_testStatus, p_table = get_data()
+    try:
+        df_fake, df_testStatus, p_table = get_data()
 
-    dataframes = {
-        "allData": df_fake,
-        "df_testStatus": df_testStatus,
-        "df_testingTime": p_table,
-    }
-    return html.Div(
-        [
-            html.H4("DataTable"),
-            html.Label("Report type:", style={"font-weight": "bold"}),
-            dcc.Dropdown(
-                id="field-dropdown",
-                options=[{"label": df, "value": df} for df in dataframes],
-                value="allData",
-                clearable=False,
-            ),
-            dash_table.DataTable(id="table"),
-        ]
-    )
+        dataframes = {
+            "allData": df_fake,
+            "df_testStatus": df_testStatus,
+            "df_testingTime": p_table,
+        }
+        return html.Div(
+            [
+                html.H4("DataTable"),
+                html.Label("Report type:", style={"font-weight": "bold"}),
+                dcc.Dropdown(
+                    id="field-dropdown",
+                    options=[{"label": df, "value": df} for df in dataframes],
+                    value="allData",
+                    clearable=False,
+                ),
+                dash_table.DataTable(id="table"),
+            ]
+        )
+    except:
+        logger.warning("\n error reading database or empty database")
+        return html.Div("Dash app 1")
 
 
 @app.callback(

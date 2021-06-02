@@ -77,10 +77,12 @@ class Cartridge(Resource):
 
         cartridge.save_to_db()
 
-        return cartridge.json()
+        return cartridge.json(), 202
 
 
 class CartridgeList(Resource):
     @jwt_required()
     def get(self):
-        return {"cartridges": list(map(lambda x: x.json(), CartridgeModel.query.all()))}
+        return {
+            "cartridges": list(map(lambda x: x.json(), CartridgeModel.query.all()))
+        }, 202
