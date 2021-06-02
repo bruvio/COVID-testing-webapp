@@ -1,19 +1,18 @@
 import dash_bootstrap_components as dbc
 from dash.dependencies import Input, Output
 import dash_html_components as html
-import dash_table
+
 from dash import Dash
 import dash_core_components as dcc
 import plotly.graph_objs as go
-import pandas as pd
-import sqlite3
-
+from src.utils.data import get_data
 from src.server import server
 
 
-# @server.route("/tableReport/")
-# def MyDashApp():
-#     return app.index()
+global dataframes
+global df_fake
+global df_testStatus
+global p_table
 
 
 app = Dash(
@@ -22,15 +21,9 @@ app = Dash(
     external_stylesheets=[dbc.themes.SLATE],
     url_base_pathname="/dashboard/",
 )
-# auth = dash_auth.BasicAuth(
-#     app,
-#     VALID_USERNAME_PASSWORD_PAIRS
-# )
+
 app.scripts.config.serve_locally = True
 app.css.config.serve_locally = True
-# auth = dash_auth.BasicAuth(app, USERNAME_PASSWORD_PAIRS)
-
-# app = dash.Dash()
 
 colors = {
     "background": "#111111",
@@ -39,57 +32,131 @@ colors = {
     "plots": "rgb(255,128,0)",
 }
 
-name = "workouts_bruvio_2020.csv"
 
-# df = read_df_from_s3(name, bucket)
-df = pd.read_csv("workouts_bruvio_2020.csv")
+def serve_layout():
 
-df_complete = df
-df_incomplete = df
+    df_fake, df_testStatus, p_table = get_data()
 
-# Create your connection.
-# cnx = sqlite3.connect('./src/data.db')
+    test_outcomes = []
+    for outcome in df_fake["testStatus"].unique():
 
-# df = pd.read_sql_query("SELECT * FROM cartridges", cnx)
+        test_outcomes.append({"label": str(outcome), "value": outcome})
 
-dataframes = {"df_complete": df_complete, "df_incomplete": df_incomplete}
-
-
-def get_data_object(user_selection):
-    """
-    For user selections, return the relevant in-memory data frame.
-    """
-    return dataframes[user_selection]
-
-
-app.layout = html.Div(
-    [
-        html.H4("DataTable"),
-        html.Label("Report type:", style={"font-weight": "bold"}),
-        dcc.Dropdown(
-            id="field-dropdown",
-            options=[{"label": df, "value": df} for df in dataframes],
-            value="df",
-            clearable=False,
-        ),
-        dash_table.DataTable(id="table"),
+    columns = df_fake.columns
+    remove_list = [
+        "submitedOn",
+        "testStartedOn",
+        "lastUpdatedon",
     ]
-)
+    features = [x for x in columns if x not in remove_list]
+
+    return html.Div(
+        children=[
+            html.H1(
+                children="Covid Testing Dashboard.",
+                style={"textAlign": "center", "color": colors["text"]},
+            ),
+            html.Div(
+                children=[
+                    dcc.Graph(
+                        id="scatter3",
+                        figure={
+                            "data": [
+                                go.Scatter(
+                                    x=df_testStatus["testStatus"],
+                                    y=df_testStatus["count"],
+                                    mode="markers",
+                                    # text=df['Title'],
+                                    marker={
+                                        "size": 12,
+                                        "color": "rgb(51,204,153)",
+                                        "symbol": "pentagon",
+                                        "line": {"width": 2},
+                                    },
+                                )
+                            ],
+                            "layout": go.Layout(
+                                plot_bgcolor=colors["background"],
+                                paper_bgcolor=colors["background"],
+                                font={"color": colors["plots"]},
+                                # title='Bike Data Scatterplot',
+                                xaxis={"title": "Test outcome"},
+                                yaxis={"title": "count"},
+                                hovermode="closest",
+                            ),
+                        },
+                    ),
+                    dcc.Graph(
+                        id="scatter4",
+                        figure={
+                            "data": [
+                                go.Scatter(
+                                    x=p_table["pattern"],
+                                    y=p_table["testTime_mean"],
+                                    mode="markers",
+                                    # text=df['Title'],
+                                    marker={
+                                        "size": 12,
+                                        "color": "rgb(51,204,153)",
+                                        "symbol": "pentagon",
+                                        "line": {"width": 2},
+                                    },
+                                )
+                            ],
+                            "layout": go.Layout(
+                                plot_bgcolor=colors["background"],
+                                paper_bgcolor=colors["background"],
+                                font={"color": colors["plots"]},
+                                # title='Run Data Scatterplot',
+                                xaxis={"title": "pattern"},
+                                yaxis={"title": "testTime_mean"},
+                                hovermode="closest",
+                            ),
+                        },
+                    ),
+                ]
+            ),
+            html.Div(
+                [
+                    dcc.Dropdown(
+                        id="test-picker", options=test_outcomes, value="Complete"
+                    ),
+                    dcc.Graph(id="graph"),
+                ]
+            ),
+        ],
+        style={"backgroundColor": colors["background"]},
+    )
 
 
-@app.callback(
-    [
-        Output(component_id="table", component_property="data"),
-        Output(component_id="table", component_property="columns"),
-    ],
-    [Input("field-dropdown", "value")],
-)
-def update_table(user_selection):
-    """
-    For user selections, return the relevant table
-    """
+@app.callback(Output("graph", "figure"), [Input("test-picker", "value")])
+def update_figure(selected):
+    df_fake, dum, dum = get_data()
+    # filtered_df = df_fake[df_fake['pattern'] == selected]
+    filtered_df = df_fake[df_fake["testStatus"] == selected]
+    # print(filtered_df)
+    traces = []
+    traces.append(
+        go.Scatter(
+            x=filtered_df["hospitalName"],
+            y=filtered_df["testTime"],
+            mode="markers",
+            opacity=0.7,
+            marker={"size": 15},
+        )
+    )
 
-    df = get_data_object(user_selection)
-    columns = [{"name": col, "id": col} for col in df.columns]
-    data = df.to_dict(orient="records")
-    return data, columns
+    return {
+        "data": traces,
+        "layout": go.Layout(
+            plot_bgcolor=colors["background"],
+            paper_bgcolor=colors["background"],
+            font={"color": colors["plots"]},
+            xaxis={"title": "hospitalName"},
+            yaxis={"title": "testTime"},
+            hovermode="closest",
+        ),
+    }
+
+
+app.layout = serve_layout
