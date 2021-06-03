@@ -25,9 +25,9 @@ def create_tables():
     from src.models.user import UserModel
 
     db.create_all()  # sql alchemy creates the tables that it sees and this works through imports
-    admin = UserModel("bruno", "asdf")
+    # admin = UserModel("bruno", "asdf")
 
-    db.session.add(admin)
+    # db.session.add(admin)
     db.session.commit()
 
 

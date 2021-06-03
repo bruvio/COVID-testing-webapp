@@ -39,11 +39,11 @@ except:
     logger.warning("\n error reading database or empty database")
 
 
-def get_data_object(user_selection):
-    """
-    For user selections, return the relevant in-memory data frame.
-    """
-    return dataframes[user_selection]
+# def get_data_object(user_selection):
+#     """
+#     For user selections, return the relevant in-memory data frame.
+#     """
+#     return dataframes[user_selection]
 
 
 def change_layout():
@@ -84,8 +84,15 @@ def update_table(user_selection):
     """
     For user selections, return the relevant table
     """
+    df_fake, df_testStatus, p_table = get_data()
 
-    df = get_data_object(user_selection)
+    dataframes = {
+        "allData": df_fake,
+        "df_testStatus": df_testStatus,
+        "df_testingTime": p_table,
+    }
+
+    df = dataframes[user_selection]
     columns = [{"name": col, "id": col} for col in df.columns]
     data = df.to_dict(orient="records")
     return data, columns

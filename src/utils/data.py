@@ -6,11 +6,11 @@ import numpy as np
 def get_data():
     cnx = sqlite3.connect("./src/data.db")
 
-    df = pd.read_sql_query("SELECT * FROM cartridges", cnx)
+    df_fake = pd.read_sql_query("SELECT * FROM cartridges", cnx)
 
-    is_complete = df["testStatus"] == "Complete"
-    df_try = df[is_complete]
-    df_fake = df.append([df_try] * 5, ignore_index=True)
+    # is_complete = df["testStatus"] == "Complete"
+    # df_try = df[is_complete]
+    # df_fake = df.append([df_try] * 5, ignore_index=True)
 
     df_fake["submitedOn"] = pd.to_datetime(
         df_fake["submissionDateTime"], infer_datetime_format=True
