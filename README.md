@@ -94,7 +94,8 @@ Here you will see a few error messages, do not worry! it is because the database
 I use PostMAN for testing the service.
 
 First Action is to create a user
-`
+
+```
 import requests
 
 url = "http://127.0.0.1:8000/register"
@@ -108,10 +109,11 @@ response = requests.request("POST", url, headers=headers, data=payload)
 
 print(response.text)
 
-`
+```
+
 Once the user is created we must authenticate
 
-`
+```
 import requests
 
 url = "http://127.0.0.1:8000/auth"
@@ -125,7 +127,8 @@ response = requests.request("POST", url, headers=headers, data=payload)
 
 print(response.text)
 
-`
+```
+
 The service will reply with a JWT token that we then will need to pass in the headers of our next calls to the endpoints
 
 We can now start populating the database.
@@ -133,7 +136,7 @@ I suggest to have a look at the data first. The data provided are 10 "completed"
 
 To insert a test/cartridge
 
-`
+```
 import requests
 
 url = "http://127.0.0.1:8000/cartridge/DN4110004145919"
@@ -148,7 +151,7 @@ response = requests.request("POST", url, headers=headers, data=payload)
 
 print(response.text)
 
-`
+```
 
 After a couple of tests are in the database we can start visiting the endpoints for reporting and plotting of the data.
 
@@ -194,14 +197,17 @@ to run the tests, first start the service and then
 
 to deploy to AWS, this is how I would do it
 
-1. first build an image
-   `IMAGE_VERSION=${1:-latest} IMAGE_NAME="dnanudge_webapp" docker build -t $IMAGE_NAME:$IMAGE_VERSION . `
+1.  first build an image
 
-2) once the image is build push it to dockerhub
+```
+IMAGE_VERSION=${1:-latest} IMAGE_NAME="dnanudge_webapp" docker build -t $IMAGE_NAME:$IMAGE_VERSION .
+```
 
-3) Create a cloudformation template to generate Roles, for example something like this
+2.  once the image is build push it to dockerhub
 
-`
+3.  Create a cloudformation template to generate Roles, for example something like this
+
+```
 export REGION="us-east-1"
 
 echo ""
@@ -210,24 +216,38 @@ echo ""
 aws cloudformation create-stack --capabilities CAPABILITY_IAM --stack-name ecs-roles --template-body file:///create_IAM_roles.yml
 
 aws cloudformation wait stack-create-complete --stack-name ecs-roles
-`
+```
 
-and export the roles, for example
-`echo "AutoscalingRole: $AutoscalingRole" echo "EC2Role: $EC2Role" echo "ECSRole: $ECSRole" echo "ECSTaskExecutionRole: $ECSTaskExecutionRole"`
+and export the roles, for example:
 
-4)add / extend permissions for example to access SSM parameter store, Xray,....
+```echo "AutoscalingRole: $AutoscalingRole"
+echo "EC2Role: $EC2Role"
+echo "ECSRole: $ECSRole"
+echo "ECSTaskExecutionRole: $ECSTaskExecutionRole"
+```
+
+4. add / extend permissions for example to access SSM parameter store, Xray,....
 
 5.
 
 crete a VPC stack, for example
-`
+
+```
 echo ""
 echo "creating vpc stack"
 echo ""
 aws cloudformation create-stack --capabilities CAPABILITY_IAM --stack-name ecs-core-infrastructure --template-body file:///core-infrastructure-setup.yml
 
 aws cloudformation wait stack-create-complete --stack-name ecs-core-infrastructure
-`and export relevant info from the stack outputs, like vpc, subnets,... 6. create a ALB (application load balancer) stack, for example`
+```
+
+and export relevant info from the stack outputs, like vpc, subnets,...
+
+6.
+
+create a ALB (application load balancer) stack, for example
+
+```
 echo ""
 echo "creating alb stack"
 echo ""
@@ -236,17 +256,18 @@ aws cloudformation create-stack \
 --template-body file:///alb-external.yml
 
 aws cloudformation wait stack-create-complete --stack-name external-alb
-`
+```
+
 and export relevant info from the stack outputs, like alb security group id, dns names,...
-
-6.
-
-create a cluster
 
 7.
 
+create a cluster
+
+8.
+
 create a task definition using the docker image (either coming from ecr or dockerhub)
 
-8.  create a service
+9.  create a service
 
-9.  start the service
+10. start the service
