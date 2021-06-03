@@ -7,4 +7,4 @@ from src.app1 import app as app1
 from src.app2 import app as app2
 
 if __name__ == "__main__":
-    server.run()
+    server.run(host="0.0.0.0", port=8000)
