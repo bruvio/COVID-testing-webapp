@@ -44,6 +44,17 @@ def authenticate():
     return response.status_code, token
 
 
+def register():
+    url = "http://127.0.0.1:8000/register"
+
+    payload = '{\n\t"username": "bruno",\n\t"password": "asdf"\n}\n'
+    headers = {"Content-Type": "application/json"}
+
+    response = requests.request("POST", url, headers=headers, data=payload)
+
+    # print(response.json()["message"])
+
+
 class ProjectTests(unittest.TestCase):
 
     ############################
@@ -77,7 +88,7 @@ class ProjectTests(unittest.TestCase):
         assert response.data == b"Hello, bruvio!"
 
     def test_register(self):
-
+        register()
         url = "http://127.0.0.1:8000/register"
 
         payload = '{\n\t"username": "bruno",\n\t"password": "asdf"\n}\n'
@@ -92,6 +103,7 @@ class ProjectTests(unittest.TestCase):
     # # # #
     # #
     def test_auth(self):
+        register()
         status, dummy = authenticate()
 
         assert status == 200
@@ -101,6 +113,7 @@ class ProjectTests(unittest.TestCase):
 
     # # #
     def test_post_resource_doesnot_exist(self):
+        register()
         status, token = authenticate()
 
         url = "http://127.0.0.1:8000/cartridge/DN4110004145909" + str(
@@ -119,6 +132,7 @@ class ProjectTests(unittest.TestCase):
         assert response.status_code == 500
 
     def test_post_resource_already_exists(self):
+        register()
         status, token = authenticate()
         url = "http://127.0.0.1:8000/cartridge/DN4110004145909"
 
@@ -134,6 +148,7 @@ class ProjectTests(unittest.TestCase):
         assert response.status_code == 201
 
     def test_delete(self):
+        register()
         status, token = authenticate()
 
         url = "http://127.0.0.1:8000/cartridge/DN4110004145909"
@@ -147,6 +162,7 @@ class ProjectTests(unittest.TestCase):
         assert response.json()["message"] == "cartridge not found."
 
     def test_cartridges(self):
+        register()
         status, token = authenticate()
 
         url = "http://127.0.0.1:8000/cartridges"
