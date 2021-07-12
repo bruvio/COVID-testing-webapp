@@ -12,10 +12,7 @@ from src.server import server
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
-global dataframes
-global df_fake
-global df_testStatus
-global p_table
+
 
 
 app = Dash(
