@@ -22,11 +22,6 @@ app = Dash(
 app.scripts.config.serve_locally = True
 app.css.config.serve_locally = True
 
-global dataframes
-global df_fake
-global df_testStatus
-global p_table
-
 try:
     df_fake, df_testStatus, p_table = get_data()
 
