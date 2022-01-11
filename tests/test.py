@@ -27,7 +27,6 @@ try:
     print("database deleted")
 except:
     print("failed to delete database")
-    pass
 
 
 def authenticate():
