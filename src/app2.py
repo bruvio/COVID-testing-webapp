@@ -37,10 +37,10 @@ def serve_layout():
     try:
         df_fake, df_testStatus, p_table = get_data()
 
-        test_outcomes = []
-        for outcome in df_fake["testStatus"].unique():
-
-            test_outcomes.append({"label": str(outcome), "value": outcome})
+        test_outcomes = [
+            {"label": str(outcome), "value": outcome}
+            for outcome in df_fake["testStatus"].unique()
+        ]
 
         columns = df_fake.columns
         remove_list = [
@@ -138,8 +138,7 @@ def update_figure(selected):
     # filtered_df = df_fake[df_fake['pattern'] == selected]
     filtered_df = df_fake[df_fake["testStatus"] == selected]
     # print(filtered_df)
-    traces = []
-    traces.append(
+    traces = [
         go.Scatter(
             x=filtered_df["hospitalName"],
             y=filtered_df["testTime"],
@@ -147,7 +146,7 @@ def update_figure(selected):
             opacity=0.7,
             marker={"size": 15},
         )
-    )
+    ]
 
     return {
         "data": traces,
